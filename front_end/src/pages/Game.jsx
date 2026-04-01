@@ -5,8 +5,7 @@ import TextField from '@mui/material/TextField';
 import { Box, Typography, Avatar } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import Overlay from '../components/Overlay';
-import Style from './Game.module.css';
-import { useUser } from '../UserProvder';
+import { useUser } from "../UserProvder";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -38,9 +37,6 @@ function Game() {
 
             const charactersData = await charactersResponse.json();
             const dailyCharacterData = await dailyCharacterResponse.json();
-
-            console.log('characters:', charactersData); 
-            console.log('daily:', dailyCharacterData);
 
             setCharacters(charactersData);
             setDailyCharacter(dailyCharacterData);
@@ -116,20 +112,24 @@ function Game() {
     };
 
     if (isLoading) {
-        return <h1 id={Style.loading}>Loading...</h1>;
+        return (
+            <h1 className="flex flex-col justify-center items-center mt-[40vh]">
+                Loading...
+            </h1>
+        );
     }
 
     return (
         <>
             <Overlay />
-            <div id={Style.main}>
+            <div className="flex flex-col items-center pt-[60px] w-screen overflow-hidden">
                 <div>
                     {victory ? (
                         <TimeLeft />
                     ) : (
-                        <form id={Style.guess} onSubmit={handleSubmit}>
+                        <form className="flex flex-col gap-2 items-center" onSubmit={handleSubmit}>
                             <h2>Guess the Character</h2>
-                            <div>
+                            <div className="flex flex-row gap-2">
                                 <Autocomplete
                                     disablePortal
                                     options={options}
@@ -165,24 +165,31 @@ function Game() {
                         </form>
                     )}
                 </div>
-                {victory ? null : <h2>{allGuesses.length !== 0 ? 'Guess Again!' : null}</h2>}
+
+                {victory ? null : (
+                    <h2>{allGuesses.length !== 0 ? 'Guess Again!' : null}</h2>
+                )}
+
                 {victory ? (
-                    <div id={Style.victory}>
+                    <div className="flex flex-col items-center pb-6">
                         <h2>Victory!</h2>
-                        <button onClick={newGame}>Play again</button>
+                        <button className="w-[10vw] h-[3vh]" onClick={newGame}>
+                            Play again
+                        </button>
                     </div>
                 ) : null}
-                <div id={Style.container}>
-                    <div id={Style.cardsHeader}>
-                        <ul>
-                            <li>Result</li>
-                            <li>Name</li>
-                            <li>Game</li>
-                            <li>Gender</li>
-                            <li>Hair Color</li>
+
+                <div className="flex flex-col items-center">
+                    <div className="flex flex-col items-center w-full">
+                        <ul className="grid grid-cols-5 gap-2 border-b border-black pb-2 pl-0 list-none">
+                            <li className="w-20 text-center">Result</li>
+                            <li className="w-20 text-center">Name</li>
+                            <li className="w-20 text-center">Game</li>
+                            <li className="w-20 text-center">Gender</li>
+                            <li className="w-20 text-center">Hair Color</li>
                         </ul>
                     </div>
-                    <div className={Style.cards}>
+                    <div className="flex flex-col-reverse gap-2 p-6">
                         {allGuesses.map((guess, index) => (
                             <GuessCard key={index} guess={guess} correctGuess={dailyCharacter} />
                         ))}
