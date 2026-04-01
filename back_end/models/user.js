@@ -17,11 +17,6 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: false,
     },
-    current_score: {
-        type: Number,
-        required: false,
-        min: 0,
-    },
     high_score: {
         type: Number,
         required: false,

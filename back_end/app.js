@@ -8,11 +8,12 @@ const cors = require('cors')
 const User = require('./models/user')
 const LocalStrategy = require('passport-local').Strategy
 const JwtStrategy = require('passport-jwt').Strategy
-const jwt = require('jsonwebtoken')
 const ExtractJwt = require('passport-jwt').ExtractJwt
 const bcrypt = require('bcryptjs')
 require('dotenv').config();
 
+const userRouter = require('./routes/userRouter');
+const characterRouter = require('./routes/characterRouter');
 
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', false);
@@ -20,87 +21,52 @@ const mongoDB = process.env.DATABASE_URL;
 
 main().catch((err) => console.log(err));
 async function main() {
-  await mongoose.connect(mongoDB);
+    await mongoose.connect(mongoDB);
 }
 
+const app = express();
 const opts = {};
 opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
 opts.secretOrKey = process.env.ACCESS_TOKEN_SECRET;
 
 passport.use(new JwtStrategy(opts, async (jwt_payload, done) => {
-  console.log(jwt_payload.id);
-  try {
-    const user = await User.findOne({ _id: jwt_payload.id });
-    
-    if (!user) {
-      console.log('No user')
-      return done(null, false); 
+    try {
+        const user = await User.findById(jwt_payload.id);
+        if (!user) return done(null, false);
+        return done(null, user);
+    } catch(err) {
+        return done(err, false);
     }
-    return done(null, user);
-  } catch(err) {
-    console.log('Error')
-    console.error('Error in JWT authentication:', err);
-    return done(err, false);
-  }
 }));
 
-passport.use(
-  new LocalStrategy(async (user_name, password, done) => {
+passport.use(new LocalStrategy(async (user_name, password, done) => {
     try {
-      const user = await User.findOne({ user_name: user_name});
-      if (!user) {
-        return done(null, false, { message: "User not found" })
-      };
-      const match = await bcrypt.compare(password, user.password);
-      if(!match) {
-        return done(null, false, { message: "Incorrect password"})
-      };
-      return done(null, user);
+        const user = await User.findOne({ user_name });
+        if (!user) return done(null, false, { message: 'User not found' });
+        const match = await bcrypt.compare(password, user.password);
+        if (!match) return done(null, false, { message: 'Incorrect password' });
+        return done(null, user);
     } catch(err) {
-      return done(err);
-    };
-  })
-);
-
-
-const userRouter = require('./routes/user');
-const usersRouter = require('./routes/users');
-
-const app = express();
-
-
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'ejs');
+        return done(err);
+    }
+}));
 
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
-
-
 app.use(cors());
 
-app.use('/user', userRouter);
-app.use('/users', usersRouter);
+app.use('/users', userRouter);
+app.use('/characters', characterRouter);
 
-// catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  next(createError(404));
+    next(createError(404));
 });
 
-// error handler
 app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+    res.status(err.status || 500);
+    res.json({ message: err.message });
 });
-
-
 
 module.exports = app;

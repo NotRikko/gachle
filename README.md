@@ -1,6 +1,6 @@
 # Vordle
 
-A wordle clone that revolves around vtubers!
+A wordle clone that revolves around gacha characters!
 
 ## Features
 
@@ -13,14 +13,14 @@ A wordle clone that revolves around vtubers!
 ### Installing Back End
 
 * Clone repository to your local machine
-* Navigate to backend project directory `cd vtuber-wordle/back_end`
+* Navigate to backend project directory `cd gachle/back_end`
 * Install required dependencies `npm install`
 * Start the development server: `npm run devstart`
 ### Installing Front End
 
 
 * Clone repository to your local machine
-* Navigate to project frontend directory `cd vtuber-wordle/front_end`
+* Navigate to project frontend directory `cd gachle/front_end`
 * Install required dependencies `npm install`
 * Start the development server: `npm run dev`
 

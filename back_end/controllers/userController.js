@@ -198,7 +198,7 @@ exports.user_change_password = asyncHandler(async (req, res, next) => {
 
     const username = req.body.username;
     const hashedPassword =  await bcrypt.hash(req.body.newData, 10);
-    if(!newPassword) {
+    if(!req.body.newData) {
         return res.sendStatus(400)
     }
     const updatedUser = await User.findOneAndUpdate({ user_name: username }, {password: hashedPassword }, { new: true});
@@ -223,13 +223,11 @@ exports.user_change_picture = async (req, res, next) => {
             try {
                 const b64 = Buffer.from(image.buffer).toString('base64');
                 let dataURI = 'data:' + image.mimetype + ';base64,' + b64;
-                // Upload image to Cloudinary
                 
                 const cloudinaryUpload = await cloudinary.uploader.upload(dataURI, {
                     resource_type: 'auto',
                 });
 
-                // Update user's profile picture URL in the database
                 const username = req.body.username;
                 const updatedUser = await User.findOneAndUpdate(
                     { user_name: username },
@@ -254,18 +252,17 @@ exports.user_change_picture = async (req, res, next) => {
 };
 
 exports.user_update_score = asyncHandler(async (req, res, next) => {
-    const username = req.body.username;
     const newScore = req.body.high_score;
+    const userId = req.user.id; 
+
     if(!newScore) {
         return res.sendStatus(400);
     }
-    const updatedUser = await User.findOneAndUpdate({ user_name: username }, {high_score: newScore }, { new: true});
+    const updatedUser = await User.findByIdAndUpdate(userId, { high_score: newScore }, { new: true });
     if(!updatedUser) {
         return res.status(404).send('User not found');
     }
-    return res.status(200).json(updatedUser)
+    return res.status(200).json(updatedUser);
 })
-
-
 
 
