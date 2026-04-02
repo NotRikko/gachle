@@ -6,7 +6,7 @@ import { NavLink } from 'react-router-dom';
 
 function Navbar({ handleVisible }) {
     return (
-        <nav className="absolute top-0 left-0 z-10 w-screen border-b border-black bg-white grid grid-cols-3 items-center">
+        <nav className="absolute top-0 left-0 z-10 w-screen border-b border-black bg-white grid grid-cols-3 items-center py-2">
             <NavLink to='/' className="ml-[3vw] text-black no-underline">
                 <HomeRoundedIcon className="w-[5.5vw] max-w-[50px]" />
             </NavLink>
